@@ -4,6 +4,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 const userRoutes = require("./routes/userRoutes");
+const messagesRoute = require("./routes/messagesRoute");
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 mongoose.set("strictQuery", true);
 
 app.use("/api/auth", userRoutes);
+app.use("/api/messages", messagesRoute);
 
 mongoose
   .connect(process.env.MONGO_URL, {
