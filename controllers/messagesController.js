@@ -8,10 +8,9 @@ module.exports.addMessage = async (req, res, next) => {
       users: [from, to],
       sender: from,
     });
-    if (data) {
-      return res.json({ msg: "Message added successfully." });
-    }
-    return res.json({ msg: "Failed to add message to the database." });
+
+    if (data) return res.json({ msg: "Message added successfully." });
+    else return res.json({ msg: "Failed to add message to the database." });
   } catch (error) {
     next(error);
   }
@@ -27,6 +26,7 @@ module.exports.getAllMessage = async (req, res, next) => {
         },
       })
       .sort({ updatedAt: 1 });
+
     const projectMessages = messages.map((msg) => {
       return {
         fromSelf: msg.sender.toString() === from,

@@ -2,18 +2,15 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const socket = require("socket.io");
-const userRoutes = require("./routes/userRoutes");
 const messagesRoute = require("./routes/messagesRoute");
+const userRoutes = require("./routes/userRoutes");
+const socket = require("socket.io");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 mongoose.set("strictQuery", true);
-
-app.use("/api/auth", userRoutes);
-app.use("/api/messages", messagesRoute);
 
 mongoose
   .connect(process.env.MONGO_URL, {
@@ -27,6 +24,9 @@ mongoose
     console.log(error.message);
   });
 
+app.use("/api/auth", userRoutes);
+app.use("/api/messages", messagesRoute);
+
 const server = app.listen(process.env.PORT, () => {
   console.log(`Server started on Port ${process.env.PORT}`);
   console.log(`View: http://localhost:${process.env.PORT}/`);
@@ -34,7 +34,7 @@ const server = app.listen(process.env.PORT, () => {
 
 const io = socket(server, {
   cors: {
-    origin: `http://localhost:3000`,
+    origin: "http://localhost:3000",
     credentials: true,
   },
 });
@@ -48,9 +48,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send-msg", (data) => {
-    const sendUserSocket = onlineUsers.get(data.io);
+    const sendUserSocket = onlineUsers.get(data.to);
     if (sendUserSocket) {
-      socket.to(sendUserSocket).emit("msg-receive", data.message);
+      socket.to(sendUserSocket).emit("msg-receive", data.msg);
     }
   });
 });
